@@ -7,6 +7,8 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -30,12 +32,22 @@ public class TestController {
      */
     @GetMapping("/hello")
     public String hello() throws NacosException {
-        logger.info("===>>> namingService: {}", namingService);
+        // logger.info("===>>> namingService: {}", namingService);
         List<Instance> allInstances = namingService.getAllInstances("service-server");
         allInstances.forEach(instance -> {
             logger.info(" instance.info: {}, {}, {}", instance.getServiceName(), instance.getIp(), instance.getPort());
         });
 
         return "Hello, This is server";
+    }
+
+    @GetMapping("/h")
+    public String h() {
+        return "Hello";
+    }
+
+    @PostMapping("/p")
+    public String post(@RequestBody String name) {
+        return "post name: "+name;
     }
 }
