@@ -1,12 +1,13 @@
 package org.server.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.NamingService;
+import com.alibaba.nacos.api.naming.pojo.Instance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * @author gzm
@@ -15,16 +16,24 @@ import java.util.List;
  */
 @RestController
 public class TestController {
-    @Autowired
-    private DiscoveryClient discoveryClient;
+    Logger logger = LoggerFactory.getLogger(TestController.class);
 
-    @RequestMapping("/hello")
-    public String h() {
-        List<ServiceInstance> instances = discoveryClient.getInstances("service-server");
-        instances.forEach(instance -> {
-            System.out.println(instance.getServiceId());
+    @NacosInjected
+    private NamingService namingService;
+
+    /**
+     * 测试服务注册中心的服务拉取代码
+     * @return
+     * @throws NacosException
+     */
+    @GetMapping("/hello")
+    public String hello() throws NacosException {
+        logger.info("===>>> namingService: {}", namingService);
+        List<Instance> allInstances = namingService.getAllInstances("service-server");
+        allInstances.forEach(instance -> {
+            logger.info(" instance.info: {}, {}, {}", instance.getServiceName(), instance.getIp(), instance.getPort());
         });
 
-        return "kkk";
+        return "Hello, This is server";
     }
 }
